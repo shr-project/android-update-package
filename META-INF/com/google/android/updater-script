@@ -10,7 +10,7 @@ run_program("/sbin/mount","/data");
 set_progress(0.100000);
 
 ui_print("Copying the webOS rootfs tarball...");
-package_extract_file("#WEBOSROOTFS#", "/data/webos-rootfs.tar.gz");
+package_extract_file("webos-rootfs.tar.gz", "/data/webos-rootfs.tar.gz");
 package_extract_file("webos_deploy.sh", "/tmp/webos_deploy.sh");
 set_perm(0, 0, 0777, "/tmp/webos_deploy.sh");
 set_progress(0.300000);

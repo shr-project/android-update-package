@@ -16,7 +16,7 @@ set_perm(0, 0, 0777, "/tmp/webos_deploy.sh");
 set_progress(0.300000);
 
 ui_print("Deploying webOS...");
-run_program("/tmp/webis_deploy.sh");
+run_program("/tmp/webos_deploy.sh");
 set_progress(0.800000);
 
 unmount("/data");

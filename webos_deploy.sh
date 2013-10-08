@@ -51,7 +51,7 @@ deploy_webos() {
     if [ -d $webos ]; then
         rm -rf $webos
     fi
-    mv $tmp_extract/binary $webos
+    mv $tmp_extract $webos
     rm -rf $tmp_extract
 }
 

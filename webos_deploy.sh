@@ -68,3 +68,5 @@ restore $connman $connman_bak
 restore $ofono $ofono_bak
 restore $timezone $timezone_bak
 restore $luna $luna_bak
+
+rm -rf /data/webos_bak

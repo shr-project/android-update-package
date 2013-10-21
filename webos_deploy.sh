@@ -3,21 +3,6 @@
 webos=/data/webos
 webos_bak=/data/webos_bak
 
-phablet_home=$webos/home/phablet
-phablet_home_bak=$webos_bak/home
-
-timezone=$webos/etc/timezone
-timezone_bak=$webos_bak/timezone
-
-ofono=$webos/var/lib/ofono
-ofono_bak=$webos_bak/ofono
-
-connman=$webos/var/lib/connman
-connman_bak=$webos_bak/connman
-
-luna=$webos/var/luna
-luna_bak=$webos_bak/luna
-
 tmp_extract=/data/webos_tmp_extract
 
 backup() {
@@ -55,18 +40,6 @@ deploy_webos() {
     rm -rf $tmp_extract
 }
 
-backup $phablet_home $phablet_home_bak
-backup $connman $connman_bak
-backup $ofono $ofono_bak
-backup $timezone $timezone_bak
-backup $luna $luna_bak
-
 deploy_webos
-
-restore $phablet_home $phablet_home_bak
-restore $connman $connman_bak
-restore $ofono $ofono_bak
-restore $timezone $timezone_bak
-restore $luna $luna_bak
 
 rm -rf /data/webos_bak

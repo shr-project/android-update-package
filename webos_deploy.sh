@@ -32,12 +32,19 @@ deploy_webos() {
     fi
     mkdir $tmp_extract
     tar --numeric-owner -xzf /data/webos-rootfs.tar.gz -C $tmp_extract
+    if [ $? -ne 0 ] ; then
+        echo "ERROR: Failed to extract webOS on the internal memory. Propably not enough free space left to install webOS?"
+        exit 1
+    fi
+
     rm /data/webos-rootfs.tar.gz
     if [ -d $webos ]; then
         rm -rf $webos
     fi
     mv $tmp_extract $webos
     rm -rf $tmp_extract
+
+    echo "Done with deploying webOS!!!"
 }
 
 deploy_webos

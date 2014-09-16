@@ -20,7 +20,7 @@ run_program("/tmp/webos_deploy.sh");
 set_progress(0.700000);
 
 ui_print("Flashing kernel ...");
-package_extract_file("boot.img", "###BOOT_PARTITION###");
+package_extract_file("boot.img", "/dev/block/###BOOT_PARTITION###");
 set_progress(0.900000);
 
 unmount("/data");

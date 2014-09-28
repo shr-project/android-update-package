@@ -27,3 +27,4 @@ unmount("/data");
 unmount("/system");
 run_program("/sbin/sync");
 set_progress(1.000000);
+ui_print("Installation completed, please reboot!");

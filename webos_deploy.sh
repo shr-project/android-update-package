@@ -1,12 +1,12 @@
 #!/sbin/sh
 
-webos=/data/webos
-webos_bak=/data/webos_bak
+target_dir=/data/luneos
+backup_dir=/data/luneos_bak
 
-tmp_extract=/data/webos_tmp_extract
+tmp_extract=/data/luneos_tmp_extract
 
 backup() {
-    mkdir -p $webos_bak
+    mkdir -p $backup_dir
     if [ -d $2 ]; then
         echo "Removing previous backout of $1"
         rm -rf $2
@@ -25,28 +25,39 @@ restore() {
     fi
 }
 
-deploy_webos() {
-    echo "Deploying webOS"
+cleanup_artifacts() {
+    # Before we switched to LuneOS as distro name it was simply webOS and therefore remove
+    # the old directory to not take too much of the internal memory for unused things.
+    if [ -d /data/webos ] ; then
+        rm -rf /data/webos
+    fi
+}
+
+deploy_luneos() {
+    echo "Cleaning up left over artifacts ..."
+    cleanup_artifacts
+
+    echo "Deploying LuneOS ..."
     if [ -d $tmp_extract ]; then
         rm -rf $tmp_extract
     fi
     mkdir $tmp_extract
     tar --numeric-owner -xzf /data/webos-rootfs.tar.gz -C $tmp_extract
     if [ $? -ne 0 ] ; then
-        echo "ERROR: Failed to extract webOS on the internal memory. Propably not enough free space left to install webOS?"
+        echo "ERROR: Failed to extract LuneOS on the internal memory. Propably not enough free space left to install LuneOS?"
         exit 1
     fi
 
     rm /data/webos-rootfs.tar.gz
-    if [ -d $webos ]; then
-        rm -rf $webos
+    if [ -d $target_dir ]; then
+        rm -rf $target_dir
     fi
-    mv $tmp_extract $webos
+    mv $tmp_extract $target_dir
     rm -rf $tmp_extract
 
-    echo "Done with deploying webOS!!!"
+    echo "Done with deploying LuneOS!!!"
 }
 
-deploy_webos
+deploy_luneos
 
-rm -rf /data/webos_bak
+rm -rf $backup_dir

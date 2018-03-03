@@ -55,6 +55,12 @@ deploy_luneos() {
     mv $tmp_extract $target_dir
     rm -rf $tmp_extract
 
+    # Recreate symlink for Halium
+    rm /data/halium-rootfs
+    if [ ! -e /data/halium-rootfs ]; then
+        ln -sf luneos /data/halium-rootfs
+    fi
+
     echo "Done with deploying LuneOS!!!"
 }
 

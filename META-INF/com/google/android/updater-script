@@ -12,11 +12,13 @@ set_progress(0.100000);
 ui_print("Copying the LuneOS rootfs tarball...");
 package_extract_file("webos-rootfs.tar.gz", "/data/webos-rootfs.tar.gz");
 package_extract_file("webos_deploy.sh", "/tmp/webos_deploy.sh");
+package_extract_file("ui-print-wrapper.sh", "/tmp/ui-print-wrapper.sh");
 set_perm(0, 0, 0777, "/tmp/webos_deploy.sh");
+set_perm(0, 0, 0777, "/tmp/ui-print-wrapper.sh");
 set_progress(0.300000);
 
 ui_print("Deploying LuneOS...");
-run_program("/tmp/webos_deploy.sh");
+run_program("/tmp/ui-print-wrapper.sh", "/tmp/webos_deploy.sh");
 set_progress(0.700000);
 
 ui_print("Flashing kernel ...");

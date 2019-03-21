@@ -29,6 +29,7 @@ cleanup_artifacts() {
     # Before we switched to LuneOS as distro name it was simply webOS and therefore remove
     # the old directory to not take too much of the internal memory for unused things.
     if [ -d /data/webos ] ; then
+        echo "Removing unused /data/webos directory"
         rm -rf /data/webos
     fi
 }
@@ -42,31 +43,44 @@ deploy_luneos() {
         rm -rf $tmp_extract
     fi
     mkdir $tmp_extract
+
+    echo "Extracting /data/webos-rootfs.tar.gz to $tmp_extract"
     tar --numeric-owner -xzf /data/webos-rootfs.tar.gz -C $tmp_extract
     if [ $? -ne 0 ] ; then
         echo "ERROR: Failed to extract LuneOS on the internal memory. Propably not enough free space left to install LuneOS?" >&2
-        echo "Trying with busybox already unpacked from webos-rootfs (hopefully)"
-        mv $tmp_extract $tmp_extract-failed
-        mkdir $tmp_extract
-        LD_LIBRARY_PATH=$tmp_extract-failed/lib/ $tmp_extract-failed/lib/ld-linux-*.so.1 $tmp_extract-failed/bin/busybox.nosuid tar -xzf /data/webos-rootfs.tar.gz -C $tmp_extract
-        if [ $? -ne 0 ] ; then
-            echo "ERROR: Failed to extract LuneOS even with busybox from partially unpacked webos-rootfs, giving up" >&2
-            exit 1
-        else
+        if ls $tmp_extract/lib/ld-linux-*.so.1 $tmp_extract/bin/busybox.nosuid >/dev/null 2>/dev/null; then
+            echo "Trying with busybox already unpacked from webos-rootfs (hopefully)"
             rm -rf $tmp_extract-failed
+            mv $tmp_extract $tmp_extract-failed
+            mkdir $tmp_extract
+            LD_LIBRARY_PATH=$tmp_extract-failed/lib/ $tmp_extract-failed/lib/ld-linux-*.so.1 $tmp_extract-failed/bin/busybox.nosuid tar -xzf /data/webos-rootfs.tar.gz -C $tmp_extract
+            if [ $? -ne 0 ] ; then
+                echo "ERROR: Failed to extract LuneOS even with busybox from partially unpacked webos-rootfs, giving up"
+		echo "Leaving $tmp_extract-failed behind, so that you can check what went wrong"
+                exit 1
+            else
+                rm -rf $tmp_extract-failed
+            fi
+        else
+            echo "ERROR: There isn't even partially unpacked $tmp_extract with $tmp_extract/lib/ld-linux-*.so.1 and $tmp_extract/bin/busybox.nosuid"
+            exit 1
         fi
     fi
 
+    echo "Removing /data/webos-rootfs.tar.gz"
     rm /data/webos-rootfs.tar.gz
     if [ -d $target_dir ]; then
+        echo "Removing old $target_dir"
         rm -rf $target_dir
     fi
+    echo "Moving $tmp_extract to $target_dir"
     mv $tmp_extract $target_dir
     rm -rf $tmp_extract
 
     # Recreate symlink for Halium
-    rm /data/halium-rootfs
+    rm -rf /data/halium-rootfs
     if [ ! -e /data/halium-rootfs ]; then
+        echo "Adding /data/halium-rootfs symlink to /data/luneos"
         ln -sf luneos /data/halium-rootfs
     fi
 

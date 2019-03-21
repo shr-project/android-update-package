@@ -44,8 +44,17 @@ deploy_luneos() {
     mkdir $tmp_extract
     tar --numeric-owner -xzf /data/webos-rootfs.tar.gz -C $tmp_extract
     if [ $? -ne 0 ] ; then
-        echo "ERROR: Failed to extract LuneOS on the internal memory. Propably not enough free space left to install LuneOS?"
-        exit 1
+        echo "ERROR: Failed to extract LuneOS on the internal memory. Propably not enough free space left to install LuneOS?" >&2
+        echo "Trying with busybox already unpacked from webos-rootfs (hopefully)"
+        mv $tmp_extract $tmp_extract-failed
+        mkdir $tmp_extract
+        LD_LIBRARY_PATH=$tmp_extract-failed/lib/ $tmp_extract-failed/lib/ld-linux-aarch64.so.1 $tmp_extract-failed/bin/busybox.nosuid tar -xzf /data/webos-rootfs.tar.gz -C $tmp_extract
+        if [ $? -ne 0 ] ; then
+            echo "ERROR: Failed to extract LuneOS even with busybox from partially unpacked webos-rootfs, giving up" >&2
+            exit 1
+        else
+            rm -rf $tmp_extract-failed
+        fi
     fi
 
     rm /data/webos-rootfs.tar.gz

@@ -48,7 +48,7 @@ deploy_luneos() {
         echo "Trying with busybox already unpacked from webos-rootfs (hopefully)"
         mv $tmp_extract $tmp_extract-failed
         mkdir $tmp_extract
-        LD_LIBRARY_PATH=$tmp_extract-failed/lib/ $tmp_extract-failed/lib/ld-linux-aarch64.so.1 $tmp_extract-failed/bin/busybox.nosuid tar -xzf /data/webos-rootfs.tar.gz -C $tmp_extract
+        LD_LIBRARY_PATH=$tmp_extract-failed/lib/ $tmp_extract-failed/lib/ld-linux-*.so.1 $tmp_extract-failed/bin/busybox.nosuid tar -xzf /data/webos-rootfs.tar.gz -C $tmp_extract
         if [ $? -ne 0 ] ; then
             echo "ERROR: Failed to extract LuneOS even with busybox from partially unpacked webos-rootfs, giving up" >&2
             exit 1

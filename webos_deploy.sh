@@ -56,14 +56,27 @@ deploy_luneos() {
             LD_LIBRARY_PATH=$tmp_extract-failed/lib/ $tmp_extract-failed/lib/ld-linux-*.so.1 $tmp_extract-failed/bin/busybox.nosuid tar -xzf /data/webos-rootfs.tar.gz -C $tmp_extract
             if [ $? -ne 0 ] ; then
                 echo "ERROR: Failed to extract LuneOS even with busybox from partially unpacked webos-rootfs, giving up"
-		echo "Leaving $tmp_extract-failed behind, so that you can check what went wrong"
+                echo "Leaving $tmp_extract-failed behind, so that you can check what went wrong"
                 exit 1
             else
                 rm -rf $tmp_extract-failed
             fi
         else
             echo "ERROR: There isn't even partially unpacked $tmp_extract with $tmp_extract/lib/ld-linux-*.so.1 and $tmp_extract/bin/busybox.nosuid"
-            exit 1
+            if ls $target_dir/lib/ld-linux-*.so.1 $target_dir/bin/busybox.nosuid >/dev/null 2>/dev/null; then
+                echo "Trying with busybox from previous luneos installation in $target_dir"
+                rm -rf $tmp_extract-failed
+                rm -rf $tmp_extract
+                mkdir $tmp_extract
+                LD_LIBRARY_PATH=$target_dir/lib/ $target_dir/lib/ld-linux-*.so.1 $target_dir/bin/busybox.nosuid tar -xzf /data/webos-rootfs.tar.gz -C $tmp_extract
+                if [ $? -ne 0 ] ; then
+                    echo "ERROR: Failed to extract LuneOS even with busybox from previous luneos installation in $target_dir"
+                    exit 1
+                fi
+            else
+                echo "ERROR: There isn't busybox and ld-linux from previous luneos installation in $target_dir/lib/ld-linux-*.so.1 and $target_dir/bin/busybox.nosuid"
+                exit 1
+            fi
         fi
     fi
 
